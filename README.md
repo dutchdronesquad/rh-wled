@@ -2,6 +2,13 @@
 
 This plugin makes it possible to control a matrix display with [WLED][wled], through the [RotorHazard][rotorhazard] events. Please note that this is still a rough draft and is still being worked on.
 
+## Pre-requisites
+
+- wled library installed in your venv (pip install wled)
+- Python 3.11 or higher
+
+Note: You need to use at least Python 3.11 or higher.
+
 ## LED behaviour
 
 | Event | LED behaviour |
@@ -11,29 +18,27 @@ This plugin makes it possible to control a matrix display with [WLED][wled], thr
 | Stage | Pulsing blue |
 | Lap | Yellow |
 
+### Development
+
+To get started, you obviously need a working development environment from RotorHazard.
+
+1. Fork / Clone the repository
+2. Create a symlink to the wled_plugin folder in the RotorHazard plugin folder
+
+```bash
+ln -s ~/rh-wled-plugin/wled_plugin/ ~/RotorHazard/src/server/plugins/wled_plugin
+```
+
+3. Start or restart RotorHazard
+4. Start developing 😄
+
+## TODO
+
+- Check if the plugin works on python 3.10 or lower
+
 ## License
 
-MIT License
-
-Copyright (c) 2023 Dutch Drone Squad
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more information.
 
 <!-- LINKS -->
 [wled]: https://github.com/Aircoookie/WLED
