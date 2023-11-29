@@ -4,11 +4,21 @@ import time
 import logging
 
 from eventmanager import Evt
-from led_event_manager import LEDEvent, LEDEffect
+from led_event_manager import ColorVal
 from RHUI import UIField, UIFieldType
 from wled import WLED
 
 logger = logging.getLogger(__name__)
+
+wled_manager = None
+
+
+# Convert RGB hexadecimal to RGB int values
+def convert_rgb(color):
+    r = 0xFF & (color >> 16)
+    g = 0xFF & (color >> 8)
+    b = 0xFF & color
+    return r, g, b
 
 
 class WLEDManager:
@@ -22,10 +32,24 @@ class WLEDManager:
         """
         self._rhapi = rhapi
         self._rhapi.events.on(Evt.LED_INITIALIZE, register_handlers)
+        self._rhapi.events.on(Evt.RACE_START, start_wled_matrix)
+        self._rhapi.events.on(Evt.RACE_STOP, stop_wled_matrix)
+        self._rhapi.events.on(Evt.RACE_STAGE, staging_wled_matrix)
+        self._rhapi.events.on(Evt.RACE_LAP_RECORDED, lap_wled_matrix)
 
         self._rhapi.ui.register_panel("wled", "WLED", "settings")
-        self._rhapi.fields.register_option(UIField('device_ip', "Enter IP Address of WLED device", UIFieldType.TEXT, placeholder="i.e. 192.168.1.10"), "wled")
-        self._rhapi.ui.register_quickbutton("wled", "save_ip", "Save IP Address", self.save_ip, {'rhapi': rhapi})
+        self._rhapi.fields.register_option(
+            UIField(
+                "device_ip",
+                "Enter IP Address of WLED device",
+                UIFieldType.TEXT,
+                placeholder="i.e. 192.168.1.10",
+            ),
+            "wled",
+        )
+        self._rhapi.ui.register_quickbutton(
+            "wled", "save_ip", "Save IP Address", self.save_ip, {"rhapi": rhapi}
+        )
         logger.debug("WLED RotorHazard Plugin Initialized")
 
     def save_ip(self, args):
@@ -33,49 +57,59 @@ class WLEDManager:
         device_ip = str(self._rhapi.db.option("device_ip", "wled"))
         args["rhapi"].ui.message_notify(f"WLED IP Address Saved: {device_ip}")
 
+    async def setMatrix(self, color, trans=7, effect="solid"):
+        """Send request to WLED device.
+
+        Args:
+        -----
+            color: RGB color values.
+            trans: Transition time.
+            effect: WLED effect.
+        """
+        async with WLED(self._rhapi.db.option("device_ip", "wled")) as client:
+            await client.segment(
+                on=True,
+                segment_id=0,
+                brightness=128,
+                color_primary=color,
+                transition=trans,
+                effect=effect,
+            )
+
+
 def initialize(rhapi):
     """Initialize plugin."""
-    WLEDManager(rhapi)
+    global wled_manager
+    wled_manager = WLEDManager(rhapi)
+
 
 def register_handlers(args):
-    if 'registerFn' in args:
+    if "registerFn" in args:
         for led_effect in discover():
-            args['registerFn'](led_effect)
+            args["registerFn"](led_effect)
+
 
 def discover(*args, **kwargs):
     """Discover WLED effects."""
-    return [
-        LEDEffect("Turn Off[WLED]", wled_clear(), {
-            "manual": False,
-            "include": [Evt.SHUTDOWN, LEDEvent.IDLE_DONE, LEDEvent.IDLE_READY, LEDEvent.IDLE_RACING],
-            'recommended': [Evt.ALL]
-        })
-    ]
+    return []
 
 
-# def initialize(**kwargs):
-#     if 'Events' in kwargs:
-#         kwargs['Events'].on('actionsInitialize', 'action_led_matrix', registerHandlers, {}, 75, True)
-#         kwargs['Events'].on(Evt.RACE_START, 'Start_wled_matrix', start_wled_matrix, {}, 75, True)
-#         kwargs['Events'].on(Evt.RACE_STOP, 'Stop_wled_matrix', stop_wled_matrix, {}, 75, True)
-#         kwargs['Events'].on(Evt.RACE_STAGE, 'Staging_wled_matrix', staging_wled_matrix, {}, 75, True)
-#         kwargs['Events'].on(Evt.RACE_LAP_RECORDED, 'Lap_wled_matrix', lap_wled_matrix, {}, 75, True)
+def start_wled_matrix(*args):
+    """LED effect on start race."""
+    asyncio.run(wled_manager.setMatrix(color=convert_rgb(ColorVal.GREEN), trans=1))
 
-# def start_wled_matrix(args):
-#     asyncio.run(setMatrix(color=[0, 255, 0], trans=1))
 
-# def stop_wled_matrix(args):
-#     asyncio.run(setMatrix(color=[255, 0, 0]))
+def stop_wled_matrix(*args):
+    """LED effect on stop race."""
+    asyncio.run(wled_manager.setMatrix(color=convert_rgb(ColorVal.RED)))
 
-# def staging_wled_matrix(args):
-#     asyncio.run(setMatrix(color=[0, 0, 255], effect="fade"))
 
-# def lap_wled_matrix(args):
-#     asyncio.run(setMatrix(color=[255, 255, 0], trans=1))
-#     time.sleep(1)
-#     asyncio.run(setMatrix(color=[0, 0, 0], trans=1))
+def staging_wled_matrix(*args):
+    """Run staging LED effect."""
+    asyncio.run(wled_manager.setMatrix(color=convert_rgb(ColorVal.BLUE), effect="fade"))
 
-# async def setMatrix(color, trans=7, effect="solid"):
-#     """Send request to WLED device."""
-#     async with WLED(
-#         await client.segment(on=True, segment_id=0, brightness=128, color_primary=color, transition=trans, effect=effect)
+
+def lap_wled_matrix(*args):
+    asyncio.run(wled_manager.setMatrix(color=[255, 255, 0], trans=1))
+    time.sleep(1)
+    asyncio.run(wled_manager.setMatrix(color=convert_rgb(ColorVal.NONE), trans=1))
