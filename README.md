@@ -1,40 +1,46 @@
-## Rotorhazard WLED plugin
+<!-- Header -->
+![alt Header of the WLED RH plugin](https://raw.githubusercontent.com/dutchdronesquad/rh-wled/main/assets/header_rh_wled-min.png)
 
-This plugin makes it possible to control a matrix display with [WLED][wled], through the [RotorHazard][rotorhazard] events. Please note that this is still a rough draft and is still being worked on.
+<!-- PROJECT SHIELDS -->
+![Project Stage][project-stage-shield]
+![Project Maintenance][maintenance-shield]
+[![License][license-shield]](LICENSE)
+
+## About
+
+This plugin makes it possible to control a WS2812B [Matrix display][matrix_panel_ali] with [WLED][wled], through the [RotorHazard][rh] API events. Please note that this is still an alpha version.
 
 ## Pre-requisites
 
-- wled library installed in your venv (pip install wled)
-- Python 3.11 or higher
-
-Note: You need to use at least Python 3.11 or higher.
+- This plugin only works with Python 3.11 or higher
+- You must install the additional packages in your virtual environment (venv) that are listed in the [requirements.txt](./requirements.txt).
 
 ## LED behaviour
 
-| Event | LED behaviour |
-| ----- | ------------- |
-| Start | Green |
-| Stop | Red |
-| Stage | Pulsing blue |
-| Lap | Yellow |
+| Event | LED behaviour      |
+| ----- | ------------------ |
+| Start | Green              |
+| Stop  | Red                |
+| Stage | Pulsing blue       |
+| Lap   | Pilot seat color   |
 
 ### Development
 
-To get started, you obviously need a working development environment from RotorHazard.
+To get started, you obviously need a working [development environment][rh_dev] from RotorHazard.
 
 1. Fork / Clone the repository
-2. Create a symlink to the wled_plugin folder in the RotorHazard plugin folder
+2. Create a symlink to the `wled` folder in the RotorHazard plugin folder
 
 ```bash
-ln -s ~/rh-wled-plugin/wled_plugin/ ~/RotorHazard/src/server/plugins/wled_plugin
+ln -s ~/rh-wled/wled/ ~/RotorHazard/src/server/plugins/wled
 ```
 
 3. Start or restart RotorHazard
+
+```bash
+sudo systemctl restart rotorhazard.service
+```
 4. Start developing 😄
-
-## TODO
-
-- Check if the plugin works on python 3.10 or lower
 
 ## License
 
@@ -42,4 +48,11 @@ Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more informa
 
 <!-- LINKS -->
 [wled]: https://github.com/Aircoookie/WLED
-[RotorHazard]: https://github.com/RotorHazard/RotorHazard
+[rh]: https://github.com/RotorHazard/RotorHazard
+[rh_dev]: https://github.com/RotorHazard/RotorHazard/blob/main/doc/Development.md
+
+[matrix_panel_ali]: https://tc.tradetracker.net/?c=15640&m=12&a=417111&r=&u=https%3A%2F%2Faliexpress.com%2Fitem%2F32944813367.html
+
+[license-shield]: https://img.shields.io/github/license/dutchdronesquad/rh-wled.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
+[project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
