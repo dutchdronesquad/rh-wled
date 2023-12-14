@@ -24,6 +24,17 @@ This plugin makes it possible to control a WS2812B [Matrix display][matrix_panel
 | Stage | Pulsing blue       |
 | Lap   | Pilot seat color   |
 
+### Installation
+
+1. Install the WLED RH Plugin like any other plugin ([RH Plugin Documentation][rh-plugin-docs])
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/dutchdronesquad/rh-wled/main/tools/install.sh)"
+```
+
+2. Install the extra PyPi packages from [requirements.txt](./requirements.txt)
+3. Restart RotorHazard
+
 ### Development
 
 To get started, you obviously need a working [development environment][rh_dev] from RotorHazard.
