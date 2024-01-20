@@ -65,5 +65,5 @@ Distributed under the **MIT** License. See [`LICENSE`](LICENSE) for more informa
 [matrix_panel_ali]: https://tc.tradetracker.net/?c=15640&m=12&a=417111&r=&u=https%3A%2F%2Faliexpress.com%2Fitem%2F32944813367.html
 
 [license-shield]: https://img.shields.io/github/license/dutchdronesquad/rh-wled.svg
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2024.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
